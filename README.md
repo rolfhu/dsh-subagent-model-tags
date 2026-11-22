@@ -70,21 +70,16 @@ It is not part of the published package.
 
 ## Releasing
 
-Publishing is automated up to the staging area: pushing a version tag runs the `Release` workflow, which checks that the tag matches `package.json`, runs the self-check, and stages the release on npm with provenance through Trusted Publishing (OIDC, no stored token).
+Publishing is automated: pushing a version tag runs the `Release` workflow, which checks that the tag matches `package.json`, runs the self-check, and publishes to npm with provenance through Trusted Publishing (OIDC, no stored token, no approval step).
 
 ```sh
 # 1. bump the version in package.json and commit it
 # 2. tag and push
-git tag v1.0.1
-git push origin v1.0.1
+git tag v1.0.2
+git push origin v1.0.2
 ```
 
-Staging does not need 2FA. The final step is a human approval with 2FA, which is npm's proof-of-presence requirement for every publish:
-
-- Open the staged version's page on npmjs.com (the workflow log prints the URL), or run `npm stage list` and `npm stage view <id>` locally
-- Approve it with your 2FA on npmjs.com — `npm stage approve <id>` in a terminal needs a TOTP code and does not work with a passkey
-
-The workflow's trusted-publisher connection allows `npm stage publish` (the default for connections created after 2026-09-03); direct `npm publish` over OIDC is refused unless a new connection explicitly allows it. `CI` runs the self-check on every push to `main` and on pull requests.
+The workflow's trusted-publisher connection allows the direct `npm publish` action. A connection that only allows `npm stage publish` (the default for connections created after 2026-09-03) fails with `403 OIDC permission denied`; connections cannot be edited, so delete and recreate it with direct publish allowed. `CI` runs the self-check on every push to `main` and on pull requests.
 
 ## License
 

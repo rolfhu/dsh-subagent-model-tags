@@ -9,9 +9,10 @@ name: Release
 # Settings -> Trusted publishing. npm exchanges the GitHub OIDC identity for a
 # short-lived publish token and attaches a provenance attestation.
 #
-# The connection allows "npm stage publish" (the default for connections created
-# after 2026-09-03), so CI stages the release and a maintainer approves it with
-# 2FA on npmjs.com (or `npm stage approve <id>`) before it goes live.
+# The connection must allow the direct "npm publish" action; a connection that
+# only allows "npm stage publish" (the default for connections created after
+# 2026-09-03) makes this step fail with 403 OIDC permission denied. Connections
+# cannot be edited — delete and recreate with direct publish allowed.
 
 on:
   push:
@@ -81,11 +82,11 @@ jobs:
             echo "already published; nothing to do"
             echo "SKIP=1" >> "$GITHUB_ENV"
           fi
-      - name: Stage publish
+      - name: Publish
         if: env.SKIP != '1'
         run: |
           set -o pipefail
-          npm stage publish --access public --provenance --loglevel=notice 2>&1 | tee publish-output.log
+          npm publish --access public --provenance --loglevel=notice 2>&1 | tee publish-output.log
       - name: Show publish output on failure
         if: always() && env.SKIP != '1'
         run: |
