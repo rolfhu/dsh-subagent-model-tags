@@ -2,6 +2,7 @@ name: Release
 
 # Publishes to npm when a version tag is pushed, e.g.:
 #   git tag v1.0.1 && git push origin v1.0.1
+# It can also be run manually from the Actions tab (workflow_dispatch).
 #
 # Authentication is npm Trusted Publishing: no token is stored here. The npm
 # package must list this repository and this workflow file under
@@ -11,6 +12,11 @@ name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (must match package.json)"
+        required: true
 
 permissions:
   contents: read
@@ -25,26 +31,43 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-      - name: Check tag matches package.json
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            version="${{ inputs.version }}"
+          else
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          if [ -z "$version" ]; then
+            echo "could not resolve a version to publish"; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "publishing version $version"
+      - name: Check version matches package.json
         run: |
           node -e "
             const pkg = require('./package.json');
-            const tag = process.env.GITHUB_REF_NAME.replace(/^v/, '');
-            if (pkg.version !== tag) {
-              console.error('tag v' + tag + ' does not match package.json version ' + pkg.version);
+            const version = process.env.VERSION;
+            if (pkg.version !== version) {
+              console.error('version ' + version + ' does not match package.json version ' + pkg.version);
               process.exit(1);
             }
-            console.log('version ' + pkg.version + ' matches tag');
+            console.log('version ' + pkg.version + ' matches');
           "
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
       - name: Self-check
         run: node test/selftest.cjs
       - name: Skip an already published version
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${{ steps.version.outputs.version }}"
           if npm view "@hukj/dsh-subagent-model-tags@${version}" version >/dev/null 2>&1; then
             echo "already published; nothing to do"
             echo "SKIP=1" >> "$GITHUB_ENV"
           fi
       - name: Publish
         if: env.SKIP != '1'
-        run: npm publish --access public --provenance
+        run: |
+          set -o pipefail
+          npm publish --access public --provenance --loglevel=notice 2>&1 | tee publish-output.log
