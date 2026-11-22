@@ -15,10 +15,13 @@ from a terminal:
 git tag v1.0.3 && git push origin v1.0.3
 ```
 
-The workflow then: writes `X.Y.Z` into `package.json`, commits the bump back to
-`main`, runs the self-check, and publishes to npm with provenance through
-Trusted Publishing (OIDC). Roughly a minute, no human step. There is no local
-version bump to remember — the tag is the source of truth. Verify with:
+The workflow then: writes `X.Y.Z` into `package.json`, commits the bump to
+`main`, moves the tag onto that commit (so the tagged tree is exactly what gets
+published, the shape `npm version` produces), runs the self-check, and
+publishes to npm with provenance through Trusted Publishing (OIDC). Roughly a
+minute, no human step. Moving the tag re-triggers the workflow once; that run
+finds the version already published and exits. There is no local version bump
+to remember — the tag is the source of truth. Verify with:
 
 ```sh
 npm view @hukj/dsh-subagent-model-tags version

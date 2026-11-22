@@ -79,6 +79,29 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
       - name: Self-check
         run: node test/selftest.cjs
+      - name: Commit the bump and re-point the tag
+        id: bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- package.json; then
+            echo "package.json already at this version; the tag already points at the right tree"
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git add package.json
+          git commit -m "chore: release ${{ steps.version.outputs.version }} [skip ci]"
+          git push origin HEAD:main
+          # Move the tag onto the bump commit so the tagged tree is exactly what
+          # gets published — what `npm version` does. This push re-triggers the
+          # workflow once; that run finds the version already published and exits.
+          if [ "${{ github.event_name }}" = "push" ]; then
+            git tag -f "${GITHUB_REF_NAME}"
+            git push -f origin "refs/tags/${GITHUB_REF_NAME}"
+            echo "moved=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Skip an already published version
         run: |
           version="${{ steps.version.outputs.version }}"
@@ -101,14 +124,3 @@ jobs:
           else
             echo "no publish output was produced"
           fi
-      - name: Commit the version bump back to main
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- package.json; then
-            echo "package.json already current; nothing to commit"
-            exit 0
-          fi
-          git add package.json
-          git commit -m "chore: release ${{ steps.version.outputs.version }} [skip ci]"
-          git push origin HEAD:main
