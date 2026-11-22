@@ -30,15 +30,7 @@
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
-  "files": [
-    "index.js",
-    "client.js",
-    "cordis.patch.yml",
-    "locale/*.json",
-    "docs/DETAIL.md",
-    "docs/preview.svg",
-    "icon.svg"
-  ],
+  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json", "docs/DETAIL.md", "docs/DETAIL.zh.md", "docs/images/*.png", "icon.svg"],
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

@@ -258,6 +258,9 @@ if (!/^\d+\.\d+\.\d+(?:-[\w.-]+)?$/.test(manifest.version)) {
 for (const locale of ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
   const json = JSON.parse(fs.readFileSync(`${base}/locale/${locale}.json`, 'utf8'))
   if (!json.meta.title || !json.meta.description) throw new Error('locale check failed: ' + locale)
+  if (json.meta.detail !== undefined && !fs.existsSync(`${base}/${json.meta.detail}`)) {
+    throw new Error('locale ' + locale + ' names a missing detail file: ' + json.meta.detail)
+  }
 }
 console.log('client.js OK: registrations, renders, effects, ancestor-chain candidates, label verification, model names on both rows')
 console.log('manifest 1.0.0 + 8 locales OK')

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Modèles des sous-agents",
+    "title": "Noms de modèle dans les panneaux de sous-agents",
     "description": "Affiche le nom du modèle de chaque sous-agent sur la ligne du nom de sa ligne (la deuxième ligne lorsque la ligne affiche une description) dans les panneaux de sous-agents de l'en-tête (panneau racine, sélecteur de frères, panneau des enfants), et élargit ces panneaux à 460 px. Le nom du modèle provient de la sélection enregistrée dans la session de chaque sous-agent, écrit sous la forme provider/model et son effort de raisonnement ; un sous-agent sans sélection et les sous-agents externes affichent un tiret. Le texte est injecté dans les lignes du panneau : une future modification du panneau par DSH peut le faire disparaître ; un panneau impossible à associer à un catalogue connu reste sans marque plutôt que d'afficher un modèle erroné.",
     "detail": "docs/DETAIL.md"
   }

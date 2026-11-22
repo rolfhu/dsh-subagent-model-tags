@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Modelos de subagentes",
+    "title": "Nomes de modelo nos painéis de subagentes",
     "description": "Mostra o nome do modelo de cada subagente na linha do nome da sua linha (a segunda linha quando a linha mostra uma descrição) nos painéis de subagentes do cabeçalho (painel raiz, seletor de irmãos e painel de filhos), e alarga esses painéis para 460 px. O nome do modelo vem da seleção registrada na sessão de cada subagente, escrito como provider/model e seu esforço de raciocínio; um subagente sem seleção e os subagentes externos mostram um traço. O texto é injetado nas linhas do painel, então uma futura mudança do painel pelo DSH pode ocultá-lo; um painel que não pode ser associado a um catálogo conhecido fica sem marcação em vez de mostrar um modelo errado.",
     "detail": "docs/DETAIL.md"
   }
