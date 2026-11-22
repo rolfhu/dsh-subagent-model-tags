@@ -82,3 +82,13 @@ jobs:
         run: |
           set -o pipefail
           npm publish --access public --provenance --loglevel=notice 2>&1 | tee publish-output.log
+      - name: Show publish output on failure
+        if: always() && env.SKIP != '1'
+        run: |
+          if [ -f publish-output.log ]; then
+            echo "----- publish output -----"
+            cat publish-output.log
+            echo "----- end publish output -----"
+          else
+            echo "no publish output was produced"
+          fi
