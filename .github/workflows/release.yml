@@ -3,10 +3,10 @@ name: Release
 # Publishes to npm when a version tag is pushed, e.g.:
 #   git tag v1.0.1 && git push origin v1.0.1
 #
-# Authentication uses the NPM_TOKEN repository secret: an npm token with publish
-# permission for @hukj and 2FA bypass (or "Automation" type). To switch to npm
-# Trusted Publishing instead, configure the package on npmjs.com, then delete the
-# NODE_AUTH_TOKEN environment entry below; `id-token: write` is already granted.
+# Authentication is npm Trusted Publishing: no token is stored here. The npm
+# package must list this repository and this workflow file under
+# Settings -> Trusted publishing. npm exchanges the GitHub OIDC identity for a
+# short-lived publish token and attaches a provenance attestation.
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org
       - name: Check tag matches package.json
         run: |
@@ -47,6 +47,4 @@ jobs:
           fi
       - name: Publish
         if: env.SKIP != '1'
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
