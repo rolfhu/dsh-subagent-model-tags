@@ -1,0 +1,52 @@
+name: Release
+
+# Publishes to npm when a version tag is pushed, e.g.:
+#   git tag v1.0.1 && git push origin v1.0.1
+#
+# Authentication uses the NPM_TOKEN repository secret: an npm token with publish
+# permission for @hukj and 2FA bypass (or "Automation" type). To switch to npm
+# Trusted Publishing instead, configure the package on npmjs.com, then delete the
+# NODE_AUTH_TOKEN environment entry below; `id-token: write` is already granted.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: Check tag matches package.json
+        run: |
+          node -e "
+            const pkg = require('./package.json');
+            const tag = process.env.GITHUB_REF_NAME.replace(/^v/, '');
+            if (pkg.version !== tag) {
+              console.error('tag v' + tag + ' does not match package.json version ' + pkg.version);
+              process.exit(1);
+            }
+            console.log('version ' + pkg.version + ' matches tag');
+          "
+      - name: Self-check
+        run: node test/selftest.cjs
+      - name: Skip an already published version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if npm view "@hukj/dsh-subagent-model-tags@${version}" version >/dev/null 2>&1; then
+            echo "already published; nothing to do"
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+      - name: Publish
+        if: env.SKIP != '1'
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

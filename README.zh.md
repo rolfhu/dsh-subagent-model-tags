@@ -1,5 +1,7 @@
 # dsh-subagent-model-tags
 
+[![CI](https://github.com/rolfhu/dsh-subagent-model-tags/actions/workflows/ci.yml/badge.svg)](https://github.com/rolfhu/dsh-subagent-model-tags/actions/workflows/ci.yml)
+
 [English](README.md) | 中文
 
 一个 DeepSeek Harness 插件：在会话顶部的子代理面板里显示每个子代理所使用的模型名，并把面板宽度从 360px 加宽到 460px。
@@ -65,6 +67,19 @@ node test/selftest.cjs
 ```
 
 该脚本不参与 npm 发布包。
+
+## 发布
+
+发布已自动化：推送版本标签会触发 `Release` 工作流，它先校验标签与 `package.json` 版本一致，再跑自检，最后发布到 npm。
+
+```sh
+# 1. 修改 package.json 版本并提交
+# 2. 打标签并推送
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+该工作流需要仓库 Secret `NPM_TOKEN`：一个能发布 `@hukj` 作用域、且允许绕过 2FA 的 npm 令牌（Automation 类型或带发布权限的细粒度令牌）。如果你在 npm 上为本仓库配置了 Trusted Publishing，可以不配 Secret，工作流会走 OIDC 发布。`CI` 工作流会在每次推送到 `main` 和每个 PR 上跑自检。
 
 ## 许可证
 

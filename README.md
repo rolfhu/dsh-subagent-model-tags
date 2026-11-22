@@ -1,5 +1,7 @@
 # dsh-subagent-model-tags
 
+[![CI](https://github.com/rolfhu/dsh-subagent-model-tags/actions/workflows/ci.yml/badge.svg)](https://github.com/rolfhu/dsh-subagent-model-tags/actions/workflows/ci.yml)
+
 English | [中文](README.zh.md)
 
 A DeepSeek Harness plugin that shows each subagent's model name in the session-header subagent panels, and widens those panels from 360 px to 460 px.
@@ -65,6 +67,19 @@ node test/selftest.cjs
 ```
 
 It is not part of the published package.
+
+## Releasing
+
+Publishing is automated: pushing a version tag runs the `Release` workflow, which checks that the tag matches `package.json`, runs the self-check, and publishes to npm.
+
+```sh
+# 1. bump the version in package.json and commit it
+# 2. tag and push
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+The workflow needs the `NPM_TOKEN` repository secret: an npm token that may publish `@hukj` and may bypass 2FA (an "Automation" token or a granular token with publish access). With npm Trusted Publishing configured for this repository, the secret can be removed and the workflow publishes over OIDC instead. `CI` runs the self-check on every push to `main` and on pull requests.
 
 ## License
 

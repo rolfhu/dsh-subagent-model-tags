@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+    tags-ignore: ["v*"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Self-check
+        run: node test/selftest.cjs
+      - name: Validate manifest and locales
+        run: |
+          node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            if (!manifest.dsh || !manifest.dsh.bundle) throw new Error('dsh.bundle missing from package.json');
+            if (!manifest.dsh.client) throw new Error('dsh.client missing from package.json');
+            for (const locale of ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
+              const meta = JSON.parse(fs.readFileSync('locale/' + locale + '.json', 'utf8'));
+              if (!meta.meta || !meta.meta.title || !meta.meta.description) throw new Error('bad locale: ' + locale);
+            }
+            console.log('manifest + 8 locales ok');
+          "
+      - name: Pack dry run
+        run: npm pack --dry-run
