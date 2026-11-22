@@ -1,8 +1,9 @@
 name: Release
 
-# Publishes to npm when a version tag is pushed, e.g.:
-#   git tag v1.0.1 && git push origin v1.0.1
-# It can also be run manually from the Actions tab (workflow_dispatch).
+# The tag is the single source of truth for the version: the workflow writes it
+# into package.json, commits the bump back to main, and publishes. Creating a
+# Release in the GitHub UI with a vX.Y.Z tag is therefore the whole release —
+# no local version bump needed.
 #
 # Authentication is npm Trusted Publishing: no token is stored here. The npm
 # package must list this repository and this workflow file under
@@ -20,11 +21,11 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to publish (must match package.json)"
+        description: "Version to publish (e.g. 1.0.3)"
         required: true
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
@@ -55,21 +56,24 @@ jobs:
           else
             version="${GITHUB_REF_NAME#v}"
           fi
-          if [ -z "$version" ]; then
-            echo "could not resolve a version to publish"; exit 1
+          if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "not a semver version: '$version' — the tag must look like v1.2.3"; exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "publishing version $version"
-      - name: Check version matches package.json
+      - name: Write the version into package.json
         run: |
           node -e "
-            const pkg = require('./package.json');
+            const fs = require('fs');
             const version = process.env.VERSION;
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             if (pkg.version !== version) {
-              console.error('version ' + version + ' does not match package.json version ' + pkg.version);
-              process.exit(1);
+              pkg.version = version;
+              fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+              console.log('package.json version set to ' + version);
+            } else {
+              console.log('package.json already at ' + version);
             }
-            console.log('version ' + pkg.version + ' matches');
           "
         env:
           VERSION: ${{ steps.version.outputs.version }}
@@ -97,3 +101,14 @@ jobs:
           else
             echo "no publish output was produced"
           fi
+      - name: Commit the version bump back to main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- package.json; then
+            echo "package.json already current; nothing to commit"
+            exit 0
+          fi
+          git add package.json
+          git commit -m "chore: release ${{ steps.version.outputs.version }} [skip ci]"
+          git push origin HEAD:main

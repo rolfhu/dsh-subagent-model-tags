@@ -7,16 +7,18 @@ rediscovering them.
 
 ## Quick release
 
+The version tag is the only input. Create a Release in the GitHub UI —
+**Releases → Draft a new release**, tag `vX.Y.Z`, Publish — or push the tag
+from a terminal:
+
 ```sh
-# 1. bump "version" in package.json, commit and push
-# 2. tag the release commit and push the tag
-git tag v1.0.3
-git push origin v1.0.3
+git tag v1.0.3 && git push origin v1.0.3
 ```
 
-GitHub Actions then: verifies the tag matches `package.json`, runs the
-self-check, and publishes to npm with provenance through Trusted Publishing
-(OIDC). Roughly 30 seconds, no human step. Verify with:
+The workflow then: writes `X.Y.Z` into `package.json`, commits the bump back to
+`main`, runs the self-check, and publishes to npm with provenance through
+Trusted Publishing (OIDC). Roughly a minute, no human step. There is no local
+version bump to remember — the tag is the source of truth. Verify with:
 
 ```sh
 npm view @hukj/dsh-subagent-model-tags version
@@ -31,10 +33,12 @@ npm view @hukj/dsh-subagent-model-tags version
 | Push a `v*` tag | Release | Yes |
 | Actions tab → Run workflow | Release | Yes (enter the version) |
 
-A plain commit never publishes. Four rails protect a mistaken tag: the tag must
-equal the `package.json` version, the self-check must pass, an already-published
-version is skipped, and npm only honours an OIDC token minted for this
-repository and this workflow file.
+A tag or a Release publishes. Four rails protect a mistaken tag: the tag must
+be semver (`v1.2.3`), the self-check must pass, an already-published version is
+skipped, and npm only honours an OIDC token minted for this repository and this
+workflow file. The version bump is committed back to `main` as
+`github-actions[bot]` with `[skip ci]`, so a release costs one extra commit and
+no CI run.
 
 ## npm account state (configured 2026-11-22)
 
