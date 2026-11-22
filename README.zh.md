@@ -30,7 +30,7 @@
 
 ## 安装
 
-要求 DeepSeek Harness `0.2.2-rc.4` 及之后的 `0.2.x` 版本。
+要求 DeepSeek Harness `0.2.2-rc.1` 及之后的 `0.2.x` 版本。
 
 - **已发布版本**：在 Web 侧边栏打开 **Plugins**，选择 **Add plugin**，输入 `@hukj/dsh-subagent-model-tags`。管理器会先按自身配置的 registry 查询，失败再按配置的回退 registry 依次尝试。
 - **本地开发**：在同一个对话框里输入本目录的绝对路径。

@@ -30,7 +30,7 @@ The model name comes from each subagent session's `modelSelection` projection, w
 
 ## Install
 
-Requires DeepSeek Harness `0.2.2-rc.4` and later `0.2.x`.
+Requires DeepSeek Harness `0.2.2-rc.1` and later `0.2.x`.
 
 - **Published package**: open **Plugins** in the Web sidebar, choose **Add plugin**, and enter `@hukj/dsh-subagent-model-tags`. The Plugin Manager picks the registry through its own configuration and falls back through the configured registries.
 - **Local development**: enter the absolute path of this directory in the same dialog.
