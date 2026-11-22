@@ -81,6 +81,8 @@ git push origin v1.0.2
 
 The workflow's trusted-publisher connection allows the direct `npm publish` action. A connection that only allows `npm stage publish` (the default for connections created after 2026-09-03) fails with `403 OIDC permission denied`; connections cannot be edited, so delete and recreate it with direct publish allowed. `CI` runs the self-check on every push to `main` and on pull requests.
 
+[RELEASING.md](RELEASING.md) records the npm account state, the trusted-publisher setup, and the plugin-catalog submission for future releases.
+
 ## License
 
 MIT

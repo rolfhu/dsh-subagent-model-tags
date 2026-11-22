@@ -81,6 +81,8 @@ git push origin v1.0.2
 
 工作流的 trusted-publisher 连接允许的是直接 `npm publish`。如果连接只允许 `npm stage publish`（2026-09-03 之后创建的连接默认如此），发布会以 `403 OIDC permission denied` 失败——连接不能编辑，只能删除重建并显式选择直接发布。`CI` 工作流会在每次推送到 `main` 和每个 PR 上跑自检。
 
+[RELEASING.md](RELEASING.md) 记录了 npm 账号状态、trusted-publisher 配置和插件市场投稿的完整操作手册，供以后的发布使用。
+
 ## 许可证
 
 MIT
