@@ -1,0 +1,3 @@
+- insert:
+    - id: subagent-model-tags
+      name: '@hukj/dsh-subagent-model-tags'

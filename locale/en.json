@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Subagent models",
+    "description": "Shows each subagent's model name on the row's name line — the second line when the row shows a description — in the session-header subagent panels (root panel, sibling switcher, and children panel), and widens those panels to 460px. The model name comes from each subagent session's recorded model selection, written as provider/model and its reasoning effort; a subagent without one, and external subagents, show a dash. The text is injected into the panel rows, so a future DSH panel change can hide it; a panel the plugin cannot pair against a known catalog stays unmarked instead of showing a wrong model.",
+    "detail": "docs/DETAIL.md"
+  }
+}

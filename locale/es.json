@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Modelos de subagentes",
+    "description": "Muestra el nombre del modelo de cada subagente en la línea del nombre de su fila (la segunda línea cuando la fila muestra una descripción) en los paneles de subagentes de la cabecera (panel raíz, selector de hermanos y panel de hijos), y ensancha esos paneles a 460 px. El nombre del modelo proviene de la selección registrada en la sesión de cada subagente, escrito como provider/model y su esfuerzo de razonamiento; un subagente sin selección y los subagentes externos muestran un guion. El texto se inyecta en las filas del panel, así que un cambio futuro del panel de DSH puede ocultarlo; un panel que no puede emparejarse con un catálogo conocido queda sin marcar en lugar de mostrar un modelo incorrecto.",
+    "detail": "docs/DETAIL.md"
+  }
+}

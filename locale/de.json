@@ -1,0 +1,7 @@
+{
+  "meta": {
+    "title": "Subagent-Modelle",
+    "description": "Zeigt den Modellnamen jedes Subagenten in der Namenszeile seiner Zeile (die zweite Zeile, wenn die Zeile eine Beschreibung zeigt) in den Subagenten-Panels der Kopfzeile (Root-Panel, Geschwister-Umschalter und Kinder-Panel) und verbreitert diese Panels auf 460 px. Der Modellname stammt aus der aufgezeichneten Modellauswahl der jeweiligen Subagenten-Session und wird als provider/model plus Reasoning-Stufe geschrieben; ein Subagent ohne Auswahl und externe Subagenten zeigen einen Gedankenstrich. Der Text wird in die Panel-Zeilen injiziert, daher kann eine künftige Panel-Änderung von DSH ihn verschwinden lassen; ein Panel, das sich keinem bekannten Katalog zuordnen lässt, bleibt ohne Markierung, statt ein falsches Modell zu zeigen.",
+    "detail": "docs/DETAIL.md"
+  }
+}

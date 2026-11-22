@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Packed artifacts
+*.tgz
+
+# Local credentials and environment
+.npmrc
+.env
+.env.*
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

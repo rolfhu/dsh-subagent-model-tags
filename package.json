@@ -1,0 +1,32 @@
+{
+  "name": "@hukj/dsh-subagent-model-tags",
+  "version": "1.0.0",
+  "description": "Shows each subagent's model in the session-header subagent panels.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolfhu/dsh-subagent-model-tags.git"
+  },
+  "scripts": {
+    "test": "node test/selftest.cjs"
+  },
+  "keywords": ["dsh", "deepseek-harness", "plugin", "subagent", "model"],
+  "engines": { "dsh": ">=0.2.2-rc.5 <0.3.0" },
+  "publishConfig": { "access": "public" },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json", "docs", "icon.svg"],
+  "dsh": {
+    "bundle": { "patch": "./cordis.patch.yml" },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": ["@deepseek-ai/dsh-client-ui-subagent"]
+    }
+  }
+}
