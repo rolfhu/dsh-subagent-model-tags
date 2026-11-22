@@ -29,7 +29,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to publish (e.g. 1.0.3)"
+        description: "Version to publish, with or without the v prefix (e.g. 1.0.4 or v1.0.4)"
         required: true
 
 permissions:
@@ -64,8 +64,10 @@ jobs:
           else
             version="${GITHUB_REF_NAME#v}"
           fi
+          # Accept an optional leading v in the typed input; the tag path strips it already.
+          version="${version#v}"
           if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
-            echo "not a semver version: '$version' — the tag must look like v1.2.3"; exit 1
+            echo "not a semver version: '$version' — use 1.2.3 or v1.2.3"; exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=v$version" >> "$GITHUB_OUTPUT"
