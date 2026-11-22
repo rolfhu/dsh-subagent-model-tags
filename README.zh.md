@@ -70,7 +70,7 @@ node test/selftest.cjs
 
 ## 发布
 
-发布已自动化：推送版本标签会触发 `Release` 工作流，它先校验标签与 `package.json` 版本一致，再跑自检，最后发布到 npm。
+发布已自动化到"暂存"这一步：推送版本标签会触发 `Release` 工作流，它先校验标签与 `package.json` 版本一致，再跑自检，最后通过 Trusted Publishing（OIDC，不存令牌）把发布提交到 npm 暂存区并附带 provenance。
 
 ```sh
 # 1. 修改 package.json 版本并提交
@@ -79,7 +79,12 @@ git tag v1.0.1
 git push origin v1.0.1
 ```
 
-该工作流需要仓库 Secret `NPM_TOKEN`：一个能发布 `@hukj` 作用域、且允许绕过 2FA 的 npm 令牌（Automation 类型或带发布权限的细粒度令牌）。如果你在 npm 上为本仓库配置了 Trusted Publishing，可以不配 Secret，工作流会走 OIDC 发布。`CI` 工作流会在每次推送到 `main` 和每个 PR 上跑自检。
+暂存本身不需要 2FA。最后一步是**人工用 2FA 批准**——这是 npm 对每次发布的 proof-of-presence 要求：
+
+- 打开 npmjs.com 上该暂存版本的页面（工作流日志里会打印链接），或在本地跑 `npm stage list`、`npm stage view <id>`
+- 在 npmjs.com 上用你的 2FA 批准；在终端里 `npm stage approve <id>` 需要 TOTP 验证码，passkey 用不了
+
+工作流的 trusted-publisher 连接允许的是 `npm stage publish`（2026-09-03 之后创建的连接默认如此）；除非新建连接时显式允许直接发布，OIDC 的 `npm publish` 会被拒绝。`CI` 工作流会在每次推送到 `main` 和每个 PR 上跑自检。
 
 ## 许可证
 
