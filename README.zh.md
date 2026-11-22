@@ -52,6 +52,8 @@
 | `locale/*.json` | 八种语言的插件展示元数据 |
 | `docs/DETAIL.md`、`docs/preview.svg` | 详情页图片 |
 | `docs/images/*.png` | README 截图 |
+| `screenshots.json` | 插件市场用的截图清单 |
+| `assets/icon-180.png` | 插件市场用的位图图标 |
 | `icon.svg` | 插件图标 |
 
 ## 开发

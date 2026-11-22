@@ -52,6 +52,8 @@ Then enable the bundle if it is switched off. The change takes effect after a pa
 | `locale/*.json` | Plugin display metadata in eight languages |
 | `docs/DETAIL.md`, `docs/preview.svg` | Detail page image |
 | `docs/images/*.png` | README screenshots |
+| `screenshots.json` | Screenshot list for plugin storefronts |
+| `assets/icon-180.png` | Raster icon for plugin storefronts |
 | `icon.svg` | Plugin icon |
 
 ## Development
