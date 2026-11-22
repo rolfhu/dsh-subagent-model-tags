@@ -1,6 +1,6 @@
 {
   "name": "@hukj/dsh-subagent-model-tags",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shows each subagent's model in the session-header subagent panels.",
   "type": "module",
   "license": "MIT",

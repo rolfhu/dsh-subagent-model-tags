@@ -252,7 +252,9 @@ for (const [name, built] of [['L0', first], ['P0', second]]) {
 
 const manifest = JSON.parse(fs.readFileSync(base + '/package.json', 'utf8'))
 if (manifest.name !== def.id) throw new Error('manifest name must equal the client module id')
-if (manifest.version !== '1.0.0') throw new Error('manifest version not bumped to 1.0.0')
+if (!/^\d+\.\d+\.\d+(?:-[\w.-]+)?$/.test(manifest.version)) {
+  throw new Error('manifest version is not semver: ' + manifest.version)
+}
 for (const locale of ['en', 'zh', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
   const json = JSON.parse(fs.readFileSync(`${base}/locale/${locale}.json`, 'utf8'))
   if (!json.meta.title || !json.meta.description) throw new Error('locale check failed: ' + locale)
