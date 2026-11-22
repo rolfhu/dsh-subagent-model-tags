@@ -1,6 +1,6 @@
 {
   "name": "@hukj/dsh-subagent-model-tags",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Shows each subagent's model in the session-header subagent panels.",
   "type": "module",
   "license": "MIT",
@@ -11,22 +11,44 @@
   "scripts": {
     "test": "node test/selftest.cjs"
   },
-  "keywords": ["dsh", "deepseek-harness", "plugin", "subagent", "model"],
-  "engines": { "dsh": ">=0.2.2-rc.1 <0.3.0" },
-  "publishConfig": { "access": "public" },
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "subagent",
+    "model"
+  ],
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
-  "files": ["index.js", "client.js", "cordis.patch.yml", "locale/*.json", "docs/DETAIL.md", "docs/preview.svg", "icon.svg"],
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "docs/DETAIL.md",
+    "docs/preview.svg",
+    "icon.svg"
+  ],
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "immediately": true,
-      "inject": ["@deepseek-ai/dsh-client-ui-subagent"]
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-subagent"
+      ]
     }
   }
 }
