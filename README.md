@@ -1,12 +1,26 @@
 # dsh-subagent-model-tags
 
+English | [中文](README.zh.md)
+
 A DeepSeek Harness plugin that shows each subagent's model name in the session-header subagent panels, and widens those panels from 360 px to 460 px.
 
-![Subagent rows with the model name on the name line, in a widened subagent panel](docs/preview.svg)
+## Screenshots
+
+The model name appears on the row's name line — the second line when the row shows a description:
+
+![A single subagent row with the model name impl/st/glm-5.3 on the name line](https://raw.githubusercontent.com/rolfhu/dsh-subagent-model-tags/main/docs/images/one-row.png)
+
+Every nesting level carries its own model name, including provider and reasoning effort:
+
+![Nested subagents, each row showing its own model name such as impl/st/kimi-k3 · high](https://raw.githubusercontent.com/rolfhu/dsh-subagent-model-tags/main/docs/images/nested-panel.png)
+
+Inside a subagent conversation, the breadcrumb panel shows model names too:
+
+![A subagent conversation's breadcrumb panel with model names on every row](https://raw.githubusercontent.com/rolfhu/dsh-subagent-model-tags/main/docs/images/breadcrumb-panel.png)
 
 ## What it does
 
-- Adds each subagent's model name on its row's name line — the second line when the row shows a description — in every subagent panel: the root session's subagent panel, a subagent conversation's sibling switcher, and its own children panel. The name is written as `provider/model · reasoning effort`, at every nesting level.
+- Adds each subagent's model name on its row's name line in every subagent panel: the root session's subagent panel, a subagent conversation's sibling switcher, and its own children panel. The name is written as `provider/model · reasoning effort`, at every nesting level.
 - A subagent with no recorded model, and external subagents that have no local session, show `—`.
 - Widens the subagent panels to 460 px (still bounded by the window width).
 
@@ -37,6 +51,7 @@ Then enable the bundle if it is switched off. The change takes effect after a pa
 | `cordis.patch.yml` | Bundle patch inserting the plugin row |
 | `locale/*.json` | Plugin display metadata in eight languages |
 | `docs/DETAIL.md`, `docs/preview.svg` | Detail page image |
+| `docs/images/*.png` | README screenshots |
 | `icon.svg` | Plugin icon |
 
 ## Development
