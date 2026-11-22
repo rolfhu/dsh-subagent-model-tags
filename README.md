@@ -70,15 +70,14 @@ It is not part of the published package.
 
 ## Releasing
 
-Publishing is automated: the **version tag is the single source of truth**. Creating a Release in the GitHub UI — or pushing a `v*` tag — runs the `Release` workflow, which writes that version into `package.json`, commits the bump back to `main`, runs the self-check, and publishes to npm with provenance through Trusted Publishing (OIDC, no stored token, no approval step).
+Publishing is automated, and the **version tag is the single source of truth**. Two entry points share one pipeline:
 
-```sh
-# Web UI: Releases → Draft a new release → tag v1.0.3 → Publish release
-# Or from a terminal:
-git tag v1.0.3 && git push origin v1.0.3
-```
+- **Releases page (recommended)**: Releases → Draft a new release → tag `vX.Y.Z` → Publish release
+- **Actions tab**: Actions → Release → Run workflow → enter the version (the workflow creates the tag and the Release itself)
 
-No local version bump is needed; the workflow takes the version from the tag. The workflow commits the bump back to `main` and moves the tag onto that commit, so the tagged tree is exactly what gets published — the same shape `npm version` produces. The workflow's trusted-publisher connection allows the direct `npm publish` action. A connection that only allows `npm stage publish` (the default for connections created after 2026-09-03) fails with `403 OIDC permission denied`; connections cannot be edited, so delete and recreate it with direct publish allowed. `CI` runs the self-check on every push to `main` and on pull requests.
+Either way the workflow writes that version into `package.json`, commits the bump to `main`, points the tag at that commit — so the tagged tree is exactly what gets published, the shape `npm version` produces — runs the self-check, and publishes to npm with provenance through Trusted Publishing (OIDC, no stored token, no approval step). A version older than the published one is refused; an already-published version is skipped.
+
+No local version bump is needed; the tag is the version. The workflow's trusted-publisher connection allows the direct `npm publish` action. A connection that only allows `npm stage publish` (the default for connections created after 2026-09-03) fails with `403 OIDC permission denied`; connections cannot be edited, so delete and recreate it with direct publish allowed. `CI` runs the self-check on every push to `main` and on pull requests.
 
 [RELEASING.md](RELEASING.md) records the npm account state, the trusted-publisher setup, and the plugin-catalog submission for future releases.
 

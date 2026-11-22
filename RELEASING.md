@@ -7,21 +7,20 @@ rediscovering them.
 
 ## Quick release
 
-The version tag is the only input. Create a Release in the GitHub UI —
-**Releases → Draft a new release**, tag `vX.Y.Z`, Publish — or push the tag
-from a terminal:
+The version tag is the only input, and either entry point works:
 
-```sh
-git tag v1.0.3 && git push origin v1.0.3
-```
+- **Releases page**: Releases → Draft a new release → tag `vX.Y.Z` → Publish.
+  GitHub creates the tag and the Release; the workflow takes it from there.
+- **Actions tab**: Actions → Release → Run workflow → enter `X.Y.Z`. The
+  workflow creates the tag and the Release itself (notes generated from the
+  commits since the previous release).
 
-The workflow then: writes `X.Y.Z` into `package.json`, commits the bump to
-`main`, moves the tag onto that commit (so the tagged tree is exactly what gets
-published, the shape `npm version` produces), runs the self-check, and
-publishes to npm with provenance through Trusted Publishing (OIDC). Roughly a
-minute, no human step. Moving the tag re-triggers the workflow once; that run
-finds the version already published and exits. There is no local version bump
-to remember — the tag is the source of truth. Verify with:
+Both paths run the same pipeline: write `X.Y.Z` into `package.json`, commit the
+bump to `main`, point the tag at that commit (so the tagged tree is exactly
+what gets published — the shape `npm version` produces), run the self-check,
+and publish to npm with provenance through Trusted Publishing (OIDC). A version
+older than the published one is refused; an already-published one is skipped.
+No local version bump is needed — the tag is the version. Verify with:
 
 ```sh
 npm view @hukj/dsh-subagent-model-tags version

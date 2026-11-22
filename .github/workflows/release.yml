@@ -1,9 +1,17 @@
 name: Release
 
-# The tag is the single source of truth for the version: the workflow writes it
-# into package.json, commits the bump back to main, and publishes. Creating a
-# Release in the GitHub UI with a vX.Y.Z tag is therefore the whole release —
-# no local version bump needed.
+# Two entry points, one pipeline:
+#
+#   A. Releases page (recommended): Releases -> Draft a new release -> tag
+#      vX.Y.Z -> Publish. GitHub creates the tag and the Release; this workflow
+#      then writes the version, commits the bump, and moves the tag onto that
+#      commit.
+#   B. Actions tab: Run workflow -> enter the version. This workflow creates
+#      the tag and the Release itself, with notes generated from the commits
+#      since the previous release.
+#
+# Either way the tag's tree ends up identical to what gets published — the
+# shape `npm version` produces.
 #
 # Authentication is npm Trusted Publishing: no token is stored here. The npm
 # package must list this repository and this workflow file under
@@ -48,7 +56,7 @@ jobs:
           else
             echo "OIDC token endpoint is MISSING (id-token: write not granted)"
           fi
-      - name: Resolve version
+      - name: Resolve version and tag
         id: version
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -60,7 +68,36 @@ jobs:
             echo "not a semver version: '$version' — the tag must look like v1.2.3"; exit 1
           fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "publishing version $version"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "publishing v$version"
+      - name: Check the version is newer than the published one
+        run: |
+          published="$(npm view "@hukj/dsh-subagent-model-tags" version 2>/dev/null || true)"
+          if [ -z "$published" ]; then
+            echo "nothing published yet; proceeding"
+            exit 0
+          fi
+          node -e "
+            const parse = (v) => {
+              const dash = v.indexOf('-');
+              return {
+                core: (dash === -1 ? v : v.slice(0, dash)).split('.').map(Number),
+                pre: dash === -1 ? null : v.slice(dash + 1),
+              };
+            };
+            const cmp = (a, b) => {
+              for (let i = 0; i < 3; i++) if (a.core[i] !== b.core[i]) return a.core[i] - b.core[i];
+              if (!a.pre !== !b.pre) return a.pre ? -1 : 1;
+              return a.pre < b.pre ? -1 : a.pre > b.pre ? 1 : 0;
+            };
+            const next = parse(process.argv[1]);
+            const current = parse(process.argv[2]);
+            if (cmp(next, current) < 0) {
+              console.error(process.argv[1] + ' is older than the published ' + process.argv[2] + ' — refusing');
+              process.exit(1);
+            }
+            console.log(process.argv[1] + ' vs published ' + process.argv[2] + ': ok');
+          " "${{ steps.version.outputs.version }}" "$published"
       - name: Write the version into package.json
         run: |
           node -e "
@@ -79,29 +116,41 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
       - name: Self-check
         run: node test/selftest.cjs
-      - name: Commit the bump and re-point the tag
+      - name: Commit the bump and align the tag
         id: bump
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          tag="${{ steps.version.outputs.tag }}"
           if git diff --quiet -- package.json; then
-            echo "package.json already at this version; the tag already points at the right tree"
-            echo "moved=false" >> "$GITHUB_OUTPUT"
+            echo "package.json already at this version"
+          else
+            git add package.json
+            git commit -m "chore: release ${{ steps.version.outputs.version }} [skip ci]"
+            git push origin HEAD:main
+            echo "bump committed to main"
+          fi
+          # Create the tag on a dispatch run; move it onto the bump commit on a
+          # tag-push run. Force-pushing a missing tag is a plain create. The
+          # push uses the default GITHUB_TOKEN, which GitHub does not let
+          # re-trigger workflows; should a run start anyway, it finds the
+          # version already published and exits.
+          git tag -f "$tag"
+          git push -f origin "refs/tags/$tag"
+          echo "tag $tag now points at $(git rev-parse HEAD)"
+      - name: Ensure a GitHub Release exists
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.version.outputs.tag }}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release $tag already exists"
             exit 0
           fi
-          git add package.json
-          git commit -m "chore: release ${{ steps.version.outputs.version }} [skip ci]"
-          git push origin HEAD:main
-          # Move the tag onto the bump commit so the tagged tree is exactly what
-          # gets published — what `npm version` does. This push re-triggers the
-          # workflow once; that run finds the version already published and exits.
-          if [ "${{ github.event_name }}" = "push" ]; then
-            git tag -f "${GITHUB_REF_NAME}"
-            git push -f origin "refs/tags/${GITHUB_REF_NAME}"
-            echo "moved=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "moved=false" >> "$GITHUB_OUTPUT"
-          fi
+          gh release create "$tag" \
+            --title "${{ steps.version.outputs.version }}" \
+            --generate-notes
       - name: Skip an already published version
         run: |
           version="${{ steps.version.outputs.version }}"

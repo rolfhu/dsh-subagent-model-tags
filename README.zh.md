@@ -70,15 +70,14 @@ node test/selftest.cjs
 
 ## 发布
 
-发布全自动，**版本标签是唯一版本来源**：在 GitHub 网页上创建 Release（或推送 `v*` 标签）即触发 `Release` 工作流——它把该版本写进 `package.json`、提交回 `main`、跑自检，然后通过 Trusted Publishing（OIDC，不存令牌、无需批准）直接发布到 npm 并附带 provenance。
+发布全自动，**版本标签是唯一版本来源**。两个入口，同一条流水线：
 
-```sh
-# 网页：Releases → Draft a new release → 标签填 v1.0.3 → Publish release
-# 或在终端：
-git tag v1.0.3 && git push origin v1.0.3
-```
+- **Releases 页（推荐）**：Releases → Draft a new release → 标签填 `vX.Y.Z` → Publish release
+- **Actions 页**：Actions → Release → Run workflow → 输版本号（tag 和 Release 由工作流自己创建，notes 自动生成）
 
-不需要在本地改版本号——工作流从 tag 取版本，并把版本变更提交回 `main`、再把 tag 移到该提交上，使 **tag 指向的树与发布物完全一致**（与 `npm version` 的形态相同）。工作流的 trusted-publisher 连接允许的是直接 `npm publish`。如果连接只允许 `npm stage publish`（2026-09-03 之后创建的连接默认如此），发布会以 `403 OIDC permission denied` 失败——连接不能编辑，只能删除重建并显式选择直接发布。`CI` 工作流会在每次推送到 `main` 和每个 PR 上跑自检。
+无论哪个入口，工作流都会：把该版本写进 `package.json`、提交 bump 到 `main`、把 tag 移到该提交上（**tag 指向的树与发布物完全一致**，与 `npm version` 形态相同）、跑自检，然后通过 Trusted Publishing（OIDC，不存令牌、无需批准）直接发布到 npm 并附带 provenance。比已发布版本旧的版本会被拒绝；已发布的版本会跳过。
+
+不需要在本地改版本号——tag 就是版本。工作流的 trusted-publisher 连接允许的是直接 `npm publish`。如果连接只允许 `npm stage publish`（2026-09-03 之后创建的连接默认如此），发布会以 `403 OIDC permission denied` 失败——连接不能编辑，只能删除重建并显式选择直接发布。`CI` 工作流会在每次推送到 `main` 和每个 PR 上跑自检。
 
 [RELEASING.md](RELEASING.md) 记录了 npm 账号状态、trusted-publisher 配置和插件市场投稿的完整操作手册，供以后的发布使用。
 
