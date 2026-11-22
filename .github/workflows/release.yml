@@ -31,6 +31,17 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+      - name: Use the latest npm
+        run: npm i -g npm@latest
+      - name: Report publish environment
+        run: |
+          node --version
+          npm --version
+          if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
+            echo "OIDC token endpoint is available"
+          else
+            echo "OIDC token endpoint is MISSING (id-token: write not granted)"
+          fi
       - name: Resolve version
         id: version
         run: |
