@@ -29,8 +29,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to publish, with or without the v prefix (e.g. 1.0.4 or v1.0.4)"
-        required: true
+        description: "Version to publish; leave empty for an automatic patch bump (1.0.3 -> 1.0.4). A leading v is accepted."
+        required: false
 
 permissions:
   contents: write
@@ -66,6 +66,19 @@ jobs:
           fi
           # Accept an optional leading v in the typed input; the tag path strips it already.
           version="${version#v}"
+          if [ -z "$version" ]; then
+            # No version given: patch-bump the one in package.json, the way
+            # semver inc patch does — a prerelease becomes its release.
+            current="$(node -p "require('./package.json').version")"
+            version="$(node -e "
+              const current = process.argv[1];
+              const dash = current.indexOf('-');
+              console.log(dash === -1
+                ? current.split('.').map((part, i) => i === 2 ? String(Number(part) + 1) : part).join('.')
+                : current.slice(0, dash));
+            " "$current")"
+            echo "no version given; patch-bumped $current to $version"
+          fi
           if ! printf '%s' "$version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
             echo "not a semver version: '$version' — use 1.2.3 or v1.2.3"; exit 1
           fi

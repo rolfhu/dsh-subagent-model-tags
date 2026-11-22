@@ -73,7 +73,7 @@ node test/selftest.cjs
 发布全自动，**版本标签是唯一版本来源**。两个入口，同一条流水线：
 
 - **Releases 页（推荐）**：Releases → Draft a new release → 标签填 `vX.Y.Z` → Publish release
-- **Actions 页**：Actions → Release → Run workflow → 输版本号（tag 和 Release 由工作流自己创建，notes 自动生成）
+- **Actions 页**：Actions → Release → Run workflow → 输版本号，或**留空自动 patch +1**（tag 和 Release 由工作流自己创建）
 
 无论哪个入口，工作流都会：把该版本写进 `package.json`、提交 bump 到 `main`、把 tag 移到该提交上（**tag 指向的树与发布物完全一致**，与 `npm version` 形态相同）、跑自检，然后通过 Trusted Publishing（OIDC，不存令牌、无需批准）直接发布到 npm 并附带 provenance。比已发布版本旧的版本会被拒绝；已发布的版本会跳过。
 

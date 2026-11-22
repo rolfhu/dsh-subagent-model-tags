@@ -73,7 +73,7 @@ It is not part of the published package.
 Publishing is automated, and the **version tag is the single source of truth**. Two entry points share one pipeline:
 
 - **Releases page (recommended)**: Releases → Draft a new release → tag `vX.Y.Z` → Publish release
-- **Actions tab**: Actions → Release → Run workflow → enter the version (the workflow creates the tag and the Release itself)
+- **Actions tab**: Actions → Release → Run workflow → enter the version, or leave it empty for an automatic patch bump (the workflow creates the tag and the Release itself)
 
 Either way the workflow writes that version into `package.json`, commits the bump to `main`, points the tag at that commit — so the tagged tree is exactly what gets published, the shape `npm version` produces — runs the self-check, and publishes to npm with provenance through Trusted Publishing (OIDC, no stored token, no approval step). A version older than the published one is refused; an already-published version is skipped.
 

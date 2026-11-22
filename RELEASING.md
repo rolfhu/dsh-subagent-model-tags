@@ -11,9 +11,11 @@ The version tag is the only input, and either entry point works:
 
 - **Releases page**: Releases → Draft a new release → tag `vX.Y.Z` → Publish.
   GitHub creates the tag and the Release; the workflow takes it from there.
-- **Actions tab**: Actions → Release → Run workflow → enter `X.Y.Z`. The
-  workflow creates the tag and the Release itself (notes generated from the
-  commits since the previous release).
+- **Actions tab**: Actions → Release → Run workflow → enter `X.Y.Z`, or leave
+  the field empty for an automatic patch bump of the version in `package.json`
+  (a leading `v` is accepted either way). The workflow creates the tag and the
+  Release itself, with notes generated from the commits since the previous
+  release.
 
 Both paths run the same pipeline: write `X.Y.Z` into `package.json`, commit the
 bump to `main`, point the tag at that commit (so the tagged tree is exactly
